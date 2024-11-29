@@ -117,9 +117,8 @@ app.post('/submit', async (req, res) => {
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: submitterEmail,
-            subject: [EXTERNAL] 19th QatarEnergy LNG Abstract Submission Confirmation,
-            text: 
-Dear ${submitterName},
+            subject: `[EXTERNAL] 19th QatarEnergy LNG Abstract Submission Confirmation`,
+            text: `Dear ${submitterName},
 
 We received your abstract submission to the 19th QatarEnergy LNG Engineering Conference.
 
@@ -143,7 +142,7 @@ To Modify your submission click here: ${editLink}
 ⁠Note: Presentations and Posters guidelines will be provided along with the letter of acceptance.
 
 Best regards,
-Abstract Submission Team,
+Abstract Submission Team`,
         };
 
         transporter.sendMail(mailOptions, (err) => {
@@ -230,9 +229,8 @@ app.put('/update/:id', async (req, res) => {
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: submitterEmail, // Always use the updated email
-            subject: [EXTERNAL] Updated: 19th QatarEnergy LNG Abstract Submission Confirmation,
-            text: 
-Dear ${submitterName},
+            subject: `[EXTERNAL] Updated: 19th QatarEnergy LNG Abstract Submission Confirmation`,
+            text: `Dear ${submitterName},
 
 Your abstract submission to the 19th QatarEnergy LNG Engineering Conference has been successfully updated.
 
@@ -249,7 +247,6 @@ Discipline: ${discipline}
 Authors Names: ${authorNames}
 Abstract: ${abstractContent}
 
-
 You can modify your submission until the deadline: ${deadline}. 
 
 To Modify your submission click here: ${updatedLink}
@@ -257,7 +254,7 @@ To Modify your submission click here: ${updatedLink}
 ⁠Note: Presentations and Posters guidelines will be provided along with the letter of acceptance.
 
 Best regards,
-Abstract Submission Team,
+Abstract Submission Team`,
         };
 
         transporter.sendMail(mailOptions, (err) => {
@@ -276,5 +273,5 @@ Abstract Submission Team,
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(Server running on port ${PORT});
+    console.log(`Server running on port ${PORT}`);
 });
