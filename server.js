@@ -125,12 +125,12 @@ app.get('/submission/:id', async (req, res) => {
   }
 });
 
-// PUT /update/:id: Update submission data and send updated email link in all cases
+// PUT /update/:id: Update submission data and send an updated email link to the current email address
 app.put('/update/:id', async (req, res) => {
   const { id } = req.params;
   const {
     submitterName,
-    submitterEmail,
+    submitterEmail, // The new email address provided by the submitter
     abstractTitle,
     abstractType,
     theme,
@@ -156,7 +156,7 @@ app.put('/update/:id', async (req, res) => {
       { uniqueId: id },
       {
         submitterName,
-        submitterEmail,
+        submitterEmail, // Update with the new email address
         abstractTitle,
         abstractType,
         theme,
@@ -174,10 +174,10 @@ app.put('/update/:id', async (req, res) => {
     // Generate the updated link
     const updatedLink = `${process.env.BASE_URL}/?id=${id}`;
 
-    // Send email to the submitter (new or existing email)
+    // Send email to the updated submitter email
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: submitterEmail,
+      to: submitterEmail, // Always use the updated email
       subject: 'Updated Submission Link',
       text: `Your submission has been updated! You can edit your updated submission using the following link: ${updatedLink}`,
     };
@@ -189,7 +189,7 @@ app.put('/update/:id', async (req, res) => {
       }
     });
 
-    res.status(200).json({ message: 'Submission updated successfully!' });
+    res.status(200).json({ message: 'Submission updated successfully and email sent!' });
   } catch (err) {
     console.error('Error updating submission:', err);
     res.status(500).json({ message: 'Error updating submission.' });
