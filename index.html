@@ -117,14 +117,6 @@
                     <li>Not to exceed 350 words.</li>
                     <li>Recommendation and conclusion.</li>
                 </ul>
-                <h4>Recommended Structure:</h4>
-                <ul>
-                    <li>Introduction.</li>
-                    <li>Driver work.</li>
-                    <li>Methodology.</li>
-                    <li>Key results / outcomes.</li>
-                </ul>
-                <p><strong>Note:</strong> Presentations and Posters guidelines will be provided along with the letter of acceptance.</p>
             </div>
 
             <!-- Submit Button -->
@@ -149,14 +141,10 @@
             }
         }
 
-        // Dynamic Author Fields Logic
-        let authorCount = 1; // Counter for authors
-
+        let authorCount = 1;
         document.getElementById('add-author-button').addEventListener('click', function () {
             authorCount++;
             const authorsContainer = document.getElementById('authors-container');
-
-            // Create a new author block
             const newAuthorDiv = document.createElement('div');
             newAuthorDiv.classList.add('author-entry');
             newAuthorDiv.innerHTML = `
@@ -179,6 +167,53 @@
             const wordCount = this.value.split(/\s+/).filter(word => word.length > 0).length;
             document.getElementById('word-count').innerText = `Words: ${wordCount}/350`;
         });
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+
+            const formData = {
+                submitterName: document.getElementById('submitter-name').value,
+                submitterEmail: document.getElementById('submitter-email').value,
+                abstractTitle: document.getElementById('abstract-title').value,
+                abstractType: document.getElementById('abstract-type').value,
+                theme: document.querySelector('input[name="theme"]:checked')?.value,
+                company: document.getElementById('company').value,
+                discipline: document.getElementById('discipline').value,
+                authorNames: Array.from(document.querySelectorAll('[name="authorNames[]"]')).map(input => input.value),
+                authorEmails: Array.from(document.querySelectorAll('[name="authorEmails[]"]')).map(input => input.value),
+                authorPositions: Array.from(document.querySelectorAll('[name="authorPositions[]"]')).map(input => input.value),
+                authorContacts: Array.from(document.querySelectorAll('[name="authorContacts[]"]')).map(input => input.value),
+                abstractContent: document.getElementById('abstract').value,
+            };
+
+            if (!formData.theme) {
+                alert('Please select a theme.');
+                return false;
+            }
+
+            if (formData.abstractContent.split(/\s+/).length > 350) {
+                alert('Abstract exceeds the word limit of 350 words.');
+                return false;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+
+                if (response.ok) {
+                    document.getElementById('abstract-form').classList.add('hidden');
+                    document.getElementById('success-message').classList.remove('hidden');
+                } else {
+                    alert('Submission failed.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred while submitting the form.');
+            }
+        }
     </script>
 </body>
 </html>
