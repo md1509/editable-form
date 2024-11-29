@@ -111,7 +111,7 @@ app.post('/submit', async (req, res) => {
 
         // Generate the edit link
         const editLink = `${process.env.BASE_URL}/?id=${uniqueId}`;
-        const deadline = "12/15/2024, 11:59:59 PM"; // Example deadline
+        const deadline = "01/31/2025, 11:59:59 PM"; // Example deadline
 
         // Send email with the edit link
         const mailOptions = {
@@ -124,24 +124,23 @@ Dear ${submitterName},
 We received your abstract submission to the 19th QatarEnergy LNG Engineering Conference.
 
 Details of your submission:
-- Submitter Name: ${submitterName}
-- Submitter Email: ${submitterEmail}
-- Abstract Title: ${abstractTitle}
-- Abstract Type: ${abstractType}
-- Theme: ${theme}
-- Company: ${company}
-- Discipline: ${discipline}
-- Authors: ${authorNames}
-- Authors' Emails: ${authorEmails}
-- Authors' Positions: ${authorPositions}
-- Authors' Contact Numbers: ${authorContact}
-- Abstract Content: ${abstractContent}
-- Submission ID: ${uniqueId}
 
-You can modify your submission until the deadline: ${deadline}.
+Submission ID: ${uniqueId}
+Submitter Name: ${submitterName}
+Submitter Email: ${submitterEmail}
+Abstract Title: ${abstractTitle}
+Abstract Type: ${abstractType}
+Theme: ${theme}
+Company: ${company}
+Discipline: ${discipline}
+Authors Name: ${authorNames}
+Abstract: ${abstractContent}
 
-Modify your submission here:
-${editLink}
+You can modify your submission until the deadline: ${deadline}. 
+
+To Modify your submission click here: ${editLink}
+
+⁠Note: Presentations and Posters guidelines will be provided along with the letter of acceptance.
 
 Best regards,
 Abstract Submission Team`,
@@ -225,37 +224,40 @@ app.put('/update/:id', async (req, res) => {
 
         // Generate the updated link
         const updatedLink = `${process.env.BASE_URL}/?id=${id}`;
-        const deadline = "12/15/2024, 11:59:59 PM"; // Example deadline
+        const deadline = "01/31/2025, 11:59:59 PM"; // Example deadline
 
         // Send email to the updated submitter email
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: submitterEmail, // Always use the updated email
-            subject: `[EXTERNAL] Abstract Submission Updated: ${abstractTitle}`,
+            subject: `[EXTERNAL] Updated: 19th QatarEnergy LNG Abstract Submission Confirmation ${abstractTitle}`,
             text: `
 Dear ${submitterName},
 
 Your abstract submission to the 19th QatarEnergy LNG Engineering Conference has been successfully updated.
 
-Details of your updated submission:
-- Submitter Name: ${submitterName}
-- Submitter Email: ${submitterEmail}
-- Abstract Title: ${abstractTitle}
-- Abstract Type: ${abstractType}
-- Theme: ${theme}
-- Company: ${company}
-- Discipline: ${discipline}
-- Authors: ${authorNames}
-- Authors' Emails: ${authorEmails}
-- Authors' Positions: ${authorPositions}
-- Authors' Contact Numbers: ${authorContact}
-- Abstract Content: ${abstractContent}
-- Submission ID: ${id}
+Updated details of your submission:
 
-You can modify your updated submission until the deadline: ${deadline}.
+Submission ID: ${id}
+Submitter Name: ${submitterName}
+Submitter Email: ${submitterEmail}
+Abstract Title: ${abstractTitle}
+Abstract Type: ${abstractType}
+Theme: ${theme}
+Company: ${company}
+Discipline: ${discipline}
+Authors Names: ${authorNames}
+Authors' Emails: ${authorEmails}
+Authors' Positions: ${authorPositions}
+Authors' Contact Numbers: ${authorContact}
+Abstract Content: ${abstractContent}
 
-Modify your submission here:
-${updatedLink}
+
+You can modify your submission until the deadline: ${deadline}. 
+
+To Modify your submission click here: ${updatedLink}
+
+⁠Note: Presentations and Posters guidelines will be provided along with the letter of acceptance.
 
 Best regards,
 Abstract Submission Team`,
