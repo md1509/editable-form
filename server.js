@@ -277,6 +277,8 @@ You can modify your submission until the deadline: ${deadline}.
 
 To modify your submission, click here: ${updatedLink}
 
+Note: Presentations and Posters guidelines will be provided along with the letter of acceptance.
+
 Best regards,
 Abstract Submission Team`,
         };
