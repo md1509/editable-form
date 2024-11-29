@@ -81,17 +81,25 @@
 
             <!-- Author/Co-author Details -->
             <h3>Author/Co-author Details</h3>
-            <label for="author-names">Author/Co-author Name(s)<span class="required">*</span>:</label>
-            <input type="text" id="author-names" name="authorNames" placeholder="Enter names separated by commas" required>
+            <div id="authors-container">
+                <!-- First Author (Mandatory) -->
+                <div class="author-entry">
+                    <label for="author-name-1">Author Name<span class="required">*</span>:</label>
+                    <input type="text" id="author-name-1" name="authorNames[]" placeholder="Enter name" required>
 
-            <label for="author-emails">Author/Co-author E-mail(s)<span class="required">*</span>:</label>
-            <input type="email" id="author-emails" name="authorEmails" placeholder="Enter emails separated by commas" required multiple>
+                    <label for="author-email-1">Author E-mail<span class="required">*</span>:</label>
+                    <input type="email" id="author-email-1" name="authorEmails[]" placeholder="Enter email" required>
 
-            <label for="author-positions">Author/Co-author Position Title(s)<span class="required">*</span>:</label>
-            <input type="text" id="author-positions" name="authorPositions" placeholder="Enter positions separated by commas" required>
+                    <label for="author-position-1">Author Position<span class="required">*</span>:</label>
+                    <input type="text" id="author-position-1" name="authorPositions[]" placeholder="Enter position" required>
 
-            <label for="author-contact">Author/Co-author Contact Number(s)<span class="required">*</span>:</label>
-            <input type="text" id="author-contact" name="authorContact" placeholder="Enter phone numbers separated by commas" required>
+                    <label for="author-contact-1">Author Contact<span class="required">*</span>:</label>
+                    <input type="text" id="author-contact-1" name="authorContacts[]" placeholder="Enter phone number" required>
+                </div>
+            </div>
+
+            <!-- Add Another Author Button -->
+            <button type="button" id="add-author-button" class="link-button">+ Add Another Author</button>
 
             <!-- Abstract Section -->
             <label for="abstract">Abstract (Max 350 words)<span class="required">*</span>:</label>
