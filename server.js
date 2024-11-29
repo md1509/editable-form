@@ -45,10 +45,10 @@ const submissionSchema = new mongoose.Schema({
     theme: { type: String, required: true },
     company: { type: String, required: true },
     discipline: { type: String, required: true },
-    authorNames: { type: String, required: true },
-    authorEmails: { type: String, required: true },
-    authorPositions: { type: String, required: true },
-    authorContact: { type: String, required: true },
+    authorNames: [{ type: String, required: true }],
+    authorEmails: [{ type: String, required: true }],
+    authorPositions: [{ type: String, required: true }],
+    authorContact: [{ type: String, required: true }],
     abstractContent: { type: String, required: true },
     uniqueId: { type: Number, required: true, unique: true },
 });
@@ -133,7 +133,7 @@ Abstract Type: ${abstractType}
 Theme: ${theme}
 Company: ${company}
 Discipline: ${discipline}
-Authors Name: ${authorNames}
+Authors Name: ${authorNames.join(', ')} // Display names as a comma-separated string
 Abstract: ${abstractContent}
 
 You can modify your submission until the deadline: ${deadline}. 
@@ -246,7 +246,7 @@ Abstract Type: ${abstractType}
 Theme: ${theme}
 Company: ${company}
 Discipline: ${discipline}
-Authors Names: ${authorNames}
+Authors Names: ${authorNames.join(', ')}
 Abstract: ${abstractContent}
 
 
