@@ -84,17 +84,19 @@
             <div id="authors-container">
                 <!-- Initial Author Fields -->
                 <div class="author-entry">
-                    <label for="author-names-1">Author Name<span class="required">*</span>:</label>
+                    <label for="author-names-1">Author 1 Name<span class="required">*</span>:</label>
                     <input type="text" id="author-names-1" name="authorNames[]" placeholder="Enter name" required>
                     
-                    <label for="author-emails-1">Author E-mail<span class="required">*</span>:</label>
+                    <label for="author-emails-1">Author 1 E-mail<span class="required">*</span>:</label>
                     <input type="email" id="author-emails-1" name="authorEmails[]" placeholder="Enter email" required>
                     
-                    <label for="author-positions-1">Position Title<span class="required">*</span>:</label>
+                    <label for="author-positions-1">Author 1 Position<span class="required">*</span>:</label>
                     <input type="text" id="author-positions-1" name="authorPositions[]" placeholder="Enter position" required>
                     
-                    <label for="author-contact-1">Contact Number<span class="required">*</span>:</label>
+                    <label for="author-contact-1">Author 1 Contact Number<span class="required">*</span>:</label>
                     <input type="text" id="author-contact-1" name="authorContact[]" placeholder="Enter contact number" required>
+
+		    <button type="button" class="remove-author-button" onclick="removeAuthor(1)">Remove Author</button>
                 </div>
             </div>
             <button type="button" id="add-author-button">Add Another Author</button>
@@ -170,9 +172,19 @@
                 
                 <label for="author-contact-${authorCount}">Contact Number<span class="required">*</span>:</label>
                 <input type="text" id="author-contact-${authorCount}" name="authorContact[]" placeholder="Enter contact number" required>
+
+		<button type="button" class="remove-author-button" onclick="removeAuthor(${authorCount})">Remove Author</button>
             `;
             document.getElementById('authors-container').appendChild(authorEntry);
         });
+
+	// Function to remove an author entry
+	function removeAuthor(authorId) {
+            const authorEntry = document.getElementById(`author-entry-${authorId}`);
+    	    if (authorEntry) {
+        	authorEntry.remove();
+            }
+	}
 
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get('id');
