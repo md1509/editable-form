@@ -254,17 +254,23 @@ app.put('/update/:id', async (req, res) => {
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: submitterEmail,
-            subject: `[EXTERNAL] Updated: 19th QatarEnergy LNG Abstract Submission Confirmation`,
+            subject: `[EXTERNAL] UPDATED: 19th QatarEnergy LNG Abstract Submission Confirmation`,
             text: `
 Dear ${submitterName},
 
-Your abstract submission has been successfully updated.
+Your abstract submission to the 19th QatarEnergy has been successfully updated.
 
 Updated details of your submission:
 
 Submission ID: ${id}
 Submitter Name: ${submitterName}
+Submitter Email: ${submitterEmail}
 Abstract Title: ${abstractTitle}
+Abstract Type: ${abstractType}
+Theme: ${theme}
+Company: ${company}
+Discipline: ${discipline}
+Authors: ${authorNames}
 Abstract: ${abstractContent}
 
 You can modify your submission until the deadline: ${deadline}. 
