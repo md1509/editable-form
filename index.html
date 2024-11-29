@@ -233,6 +233,34 @@
                 alert(`An error occurred: ${error.message}`);
             }
         }
+
+        let authorCount = 1; // Track the number of authors
+
+        document.getElementById('add-author-button').addEventListener('click', function () {
+            authorCount++;
+            const authorsContainer = document.getElementById('authors-container');
+
+            // Create a new author block
+            const newAuthorDiv = document.createElement('div');
+            newAuthorDiv.classList.add('author-entry');
+            newAuthorDiv.innerHTML = `
+                <label for="author-name-${authorCount}">Author Name<span class="required">*</span>:</label>
+                <input type="text" id="author-name-${authorCount}" name="authorNames[]" placeholder="Enter name" required>
+
+                <label for="author-email-${authorCount}">Author E-mail<span class="required">*</span>:</label>
+                <input type="email" id="author-email-${authorCount}" name="authorEmails[]" placeholder="Enter email" required>
+
+                <label for="author-position-${authorCount}">Author Position<span class="required">*</span>:</label>
+                <input type="text" id="author-position-${authorCount}" name="authorPositions[]" placeholder="Enter position" required>
+
+                <label for="author-contact-${authorCount}">Author Contact<span class="required">*</span>:</label>
+                <input type="text" id="author-contact-${authorCount}" name="authorContacts[]" placeholder="Enter phone number" required>
+            `;
+
+            // Append the new author block to the container
+            authorsContainer.appendChild(newAuthorDiv);
+        });
+
     </script>
 </body>
 </html>
