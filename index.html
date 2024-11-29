@@ -98,7 +98,7 @@
             <textarea id="abstract" name="abstractContent" placeholder="Write your abstract here (Max: 350 words)" rows="5" required></textarea>
             <p id="word-count">Words: 0/350</p>
             
-            <div class="guideline-box">
+            <div class="abstract-notes">
                 <h4>Recommended Guideline:</h4>
                 <ul>
                   <li>Relevant to the selected theme for oil and gas industry.</li>
@@ -117,7 +117,7 @@
                   <li>Methodology.</li>
                   <li>Key results / outcomes.</li>
                 </ul>
-		<p><strong>Note:</strong> Presentations and Posters guidelines will be provided along with the letter of acceptance.</p>
+		<h4>Note: Presentations and Posters guidelines will be provided along with the letter of acceptance.</h4>
             </div>
           
             <!-- Submit Button -->
@@ -144,7 +144,7 @@
 
         document.getElementById('abstract').addEventListener('input', function () {
             const wordCount = this.value.split(/\s+/).filter(word => word.length > 0).length;
-            document.getElementById('word-count').innerText = `Words: ${wordCount}/350`;
+            document.getElementById('word-count').innerText = Words: ${wordCount}/350;
         });
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -154,7 +154,7 @@
             document.getElementById('formTitle').innerText = "Edit Your Submission";
             document.getElementById('submit-button').innerText = "Update";
 
-            fetch(`https://editable-form.onrender.com/submission/${id}`)
+            fetch(https://editable-form.onrender.com/submission/${id})
                 .then(response => response.json())
                 .then(data => {
                     if (!data) {
@@ -165,7 +165,7 @@
                     document.getElementById('submitter-email').value = data.submitterEmail;
                     document.getElementById('abstract-title').value = data.abstractTitle;
                     document.getElementById('abstract-type').value = data.abstractType;
-                    document.querySelector(`input[name="theme"][value="${data.theme}"]`).checked = true;
+                    document.querySelector(input[name="theme"][value="${data.theme}"]).checked = true;
                     document.getElementById('company').value = data.company;
                     document.getElementById('discipline').value = data.discipline;
                     document.getElementById('author-names').value = data.authorNames;
@@ -206,7 +206,7 @@
             }
 
             try {
-                const url = id ? `https://editable-form.onrender.com/update/${id}` : `https://editable-form.onrender.com/submit`;
+                const url = id ? https://editable-form.onrender.com/update/${id} : https://editable-form.onrender.com/submit;
                 const method = id ? 'PUT' : 'POST';
 
                 const response = await fetch(url, {
@@ -222,7 +222,7 @@
                     alert('Submission failed. Please try again.');
                 }
             } catch (error) {
-                alert(`An error occurred: ${error.message}`);
+                alert(An error occurred: ${error.message});
             }
         }
     </script>
