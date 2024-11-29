@@ -81,22 +81,17 @@
 
             <!-- Author/Co-author Details -->
             <h3>Author/Co-author Details</h3>
-            <div id="author-section">
-                <div class="author-entry">
-                    <label for="author-name-1">Name<span class="required">*</span>:</label>
-                    <input type="text" id="author-name-1" name="authorNames[]" placeholder="Enter name" required>
+            <label for="author-names">Author/Co-author Name(s)<span class="required">*</span>:</label>
+            <input type="text" id="author-names" name="authorNames" placeholder="Enter names separated by commas" required>
 
-                    <label for="author-email-1">Email<span class="required">*</span>:</label>
-                    <input type="email" id="author-email-1" name="authorEmails[]" placeholder="Enter email" required>
+            <label for="author-emails">Author/Co-author E-mail(s)<span class="required">*</span>:</label>
+            <input type="email" id="author-emails" name="authorEmails" placeholder="Enter emails separated by commas" required multiple>
 
-                    <label for="author-position-1">Position<span class="required">*</span>:</label>
-                    <input type="text" id="author-position-1" name="authorPositions[]" placeholder="Enter position" required>
+            <label for="author-positions">Author/Co-author Position Title(s)<span class="required">*</span>:</label>
+            <input type="text" id="author-positions" name="authorPositions" placeholder="Enter positions separated by commas" required>
 
-                    <label for="author-contact-1">Contact<span class="required">*</span>:</label>
-                    <input type="text" id="author-contact-1" name="authorContacts[]" placeholder="Enter contact number" required>
-                </div>
-                <a href="#" id="add-author-link" class="add-author-link">Add Another Author</a>
-            </div>
+            <label for="author-contact">Author/Co-author Contact Number(s)<span class="required">*</span>:</label>
+            <input type="text" id="author-contact" name="authorContact" placeholder="Enter phone numbers separated by commas" required>
 
             <!-- Abstract Section -->
             <label for="abstract">Abstract (Max 350 words)<span class="required">*</span>:</label>
@@ -152,29 +147,84 @@
             document.getElementById('word-count').innerText = `Words: ${wordCount}/350`;
         });
 
-        let authorCount = 1;
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
 
-        document.getElementById('add-author-link').addEventListener('click', function (event) {
+        if (id) {
+            document.getElementById('formTitle').innerText = "Edit Your Submission";
+            document.getElementById('submit-button').innerText = "Update";
+
+            fetch(`https://editable-form.onrender.com/submission/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data) {
+                        alert("Invalid or expired link.");
+                        return;
+                    }
+                    document.getElementById('submitter-name').value = data.submitterName;
+                    document.getElementById('submitter-email').value = data.submitterEmail;
+                    document.getElementById('abstract-title').value = data.abstractTitle;
+                    document.getElementById('abstract-type').value = data.abstractType;
+                    document.querySelector(`input[name="theme"][value="${data.theme}"]`).checked = true;
+                    document.getElementById('company').value = data.company;
+                    document.getElementById('discipline').value = data.discipline;
+                    document.getElementById('author-names').value = data.authorNames;
+                    document.getElementById('author-emails').value = data.authorEmails;
+                    document.getElementById('author-positions').value = data.authorPositions;
+                    document.getElementById('author-contact').value = data.authorContact;
+                    document.getElementById('abstract').value = data.abstractContent;
+                })
+                .catch((error) => alert("Error fetching submission data."));
+        }
+
+        async function handleSubmit(event) {
             event.preventDefault();
-            authorCount++;
-            const authorSection = document.getElementById('author-section');
-            const newAuthorDiv = document.createElement('div');
-            newAuthorDiv.classList.add('author-entry');
-            newAuthorDiv.innerHTML = `
-                <label for="author-name-${authorCount}">Name<span class="required">*</span>:</label>
-                <input type="text" id="author-name-${authorCount}" name="authorNames[]" placeholder="Enter name" required>
 
-                <label for="author-email-${authorCount}">Email<span class="required">*</span>:</label>
-                <input type="email" id="author-email-${authorCount}" name="authorEmails[]" placeholder="Enter email" required>
+            const formData = {
+                submitterName: document.getElementById('submitter-name').value,
+                submitterEmail: document.getElementById('submitter-email').value,
+                abstractTitle: document.getElementById('abstract-title').value,
+                abstractType: document.getElementById('abstract-type').value,
+                theme: document.querySelector('input[name="theme"]:checked')?.value,
+                company: document.getElementById('company').value,
+                discipline: document.getElementById('discipline').value,
+                authorNames: document.getElementById('author-names').value,
+                authorEmails: document.getElementById('author-emails').value,
+                authorPositions: document.getElementById('author-positions').value,
+                authorContact: document.getElementById('author-contact').value,
+                abstractContent: document.getElementById('abstract').value,
+            };
 
-                <label for="author-position-${authorCount}">Position<span class="required">*</span>:</label>
-                <input type="text" id="author-position-${authorCount}" name="authorPositions[]" placeholder="Enter position" required>
+            if (!formData.theme) {
+                alert('Please select a theme.');
+                return;
+            }
 
-                <label for="author-contact-${authorCount}">Contact<span class="required">*</span>:</label>
-                <input type="text" id="author-contact-${authorCount}" name="authorContacts[]" placeholder="Enter contact number" required>
-            `;
-            authorSection.insertBefore(newAuthorDiv, document.getElementById('add-author-link'));
-        });
+            if (formData.abstractContent.split(/\s+/).length > 350) {
+                alert('Abstract exceeds the maximum word limit of 350 words.');
+                return;
+            }
+
+            try {
+                const url = id ? `https://editable-form.onrender.com/update/${id}` : `https://editable-form.onrender.com/submit`;
+                const method = id ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+
+                if (response.ok) {
+                    document.getElementById('abstract-form').classList.add('hidden');
+                    document.getElementById('success-message').classList.remove('hidden');
+                } else {
+                    alert('Submission failed. Please try again.');
+                }
+            } catch (error) {
+                alert(`An error occurred: ${error.message}`);
+            }
+        }
     </script>
 </body>
 </html>
