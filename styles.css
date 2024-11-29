@@ -212,3 +212,16 @@ button:hover {
 #add-author-button:hover {
     background-color: #0056b3;
 }
+
+.link-button {
+    background: none;
+    border: none;
+    color: #007bff; /* Link-style blue */
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 10px;
+}
+.link-button:hover {
+    color: #0056b3; /* Darker blue on hover */
+}
