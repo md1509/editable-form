@@ -189,7 +189,6 @@
                         return;
                     }
 
-                    // Populate fixed fields
                     document.getElementById('submitter-name').value = data.submitterName;
                     document.getElementById('submitter-email').value = data.submitterEmail;
                     document.getElementById('abstract-title').value = data.abstractTitle;
@@ -199,11 +198,8 @@
                     document.getElementById('discipline').value = data.discipline;
                     document.getElementById('abstract').value = data.abstractContent;
 
-                    // Clear existing author fields
                     const authorsContainer = document.getElementById('authors-container');
                     authorsContainer.innerHTML = '';
-
-                    // Dynamically add authors
                     data.authors.forEach((author, index) => {
                         const authorEntry = document.createElement('div');
                         authorEntry.className = 'author-entry';
@@ -229,7 +225,6 @@
         async function handleSubmit(event) {
             event.preventDefault();
 
-            // Collect fixed field data
             const formData = {
                 submitterName: document.getElementById('submitter-name').value,
                 submitterEmail: document.getElementById('submitter-email').value,
@@ -239,48 +234,51 @@
                 company: document.getElementById('company').value,
                 discipline: document.getElementById('discipline').value,
                 abstractContent: document.getElementById('abstract').value,
-                authors: [], // Collect authors dynamically
+                authorNames: [],
+                authorEmails: [],
+                authorPositions: [],
+                authorContact: [],
             };
 
-            // Collect all authors
             const authorEntries = document.querySelectorAll('.author-entry');
-            authorEntries.forEach((entry, index) => {
-                const name = entry.querySelector(`#author-names-${index + 1}`).value;
-                const email = entry.querySelector(`#author-emails-${index + 1}`).value;
-                const position = entry.querySelector(`#author-positions-${index + 1}`).value;
-                const contact = entry.querySelector(`#author-contact-${index + 1}`).value;
-
-                formData.authors.push({ name, email, position, contact });
+            authorEntries.forEach((entry) => {
+                formData.authorNames.push(entry.querySelector('input[name="authorNames[]"]').value);
+                formData.authorEmails.push(entry.querySelector('input[name="authorEmails[]"]').value);
+                formData.authorPositions.push(entry.querySelector('input[name="authorPositions[]"]').value);
+                formData.authorContact.push(entry.querySelector('input[name="authorContact[]"]').value);
             });
 
-            // Validate theme
+            formData.authorNames = formData.authorNames.join(", ");
+            formData.authorEmails = formData.authorEmails.join(", ");
+            formData.authorPositions = formData.authorPositions.join(", ");
+            formData.authorContact = formData.authorContact.join(", ");
+
             if (!formData.theme) {
                 alert('Please select a theme.');
                 return;
             }
 
-            // Validate word count
             if (formData.abstractContent.split(/\s+/).length > 350) {
                 alert('Abstract exceeds the maximum word limit of 350 words.');
                 return;
             }
 
-            // Send data to the server
             try {
                 const url = id ? `https://editable-form.onrender.com/update/${id}` : `https://editable-form.onrender.com/submit`;
-                const method = id ? 'PUT' : 'POST';
+                const method = id ? "PUT" : "POST";
 
                 const response = await fetch(url, {
                     method,
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(formData),
                 });
 
                 if (response.ok) {
-                    document.getElementById('abstract-form').classList.add('hidden');
-                    document.getElementById('success-message').classList.remove('hidden');
+                    document.getElementById("abstract-form").classList.add("hidden");
+                    document.getElementById("success-message").classList.remove("hidden");
                 } else {
-                    alert('Submission failed. Please try again.');
+                    const errorMessage = await response.text();
+                    alert(`Submission failed: ${errorMessage}`);
                 }
             } catch (error) {
                 alert(`An error occurred: ${error.message}`);
