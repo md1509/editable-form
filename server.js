@@ -110,15 +110,15 @@ app.post('/submit', async (req, res) => {
         await newSubmission.save();
 
         // Generate the edit link
-        const editLink = `${process.env.BASE_URL}/?id=${uniqueId}`;
+        const editLink = ${process.env.BASE_URL}/?id=${uniqueId};
         const deadline = "01/31/2025, 11:59:59 PM"; // Example deadline
 
         // Send email with the edit link
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: submitterEmail,
-            subject: `[EXTERNAL] 19th QatarEnergy LNG Abstract Submission Confirmation`,
-            text: `
+            subject: [EXTERNAL] 19th QatarEnergy LNG Abstract Submission Confirmation,
+            text: 
 Dear ${submitterName},
 
 We received your abstract submission to the 19th QatarEnergy LNG Engineering Conference.
@@ -143,7 +143,7 @@ To Modify your submission click here: ${editLink}
 ⁠Note: Presentations and Posters guidelines will be provided along with the letter of acceptance.
 
 Best regards,
-Abstract Submission Team`,
+Abstract Submission Team,
         };
 
         transporter.sendMail(mailOptions, (err) => {
@@ -223,15 +223,15 @@ app.put('/update/:id', async (req, res) => {
         );
 
         // Generate the updated link
-        const updatedLink = `${process.env.BASE_URL}/?id=${id}`;
+        const updatedLink = ${process.env.BASE_URL}/?id=${id};
         const deadline = "01/31/2025, 11:59:59 PM"; // Example deadline
 
         // Send email to the updated submitter email
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: submitterEmail, // Always use the updated email
-            subject: `[EXTERNAL] Updated: 19th QatarEnergy LNG Abstract Submission Confirmation`,
-            text: `
+            subject: [EXTERNAL] Updated: 19th QatarEnergy LNG Abstract Submission Confirmation,
+            text: 
 Dear ${submitterName},
 
 Your abstract submission to the 19th QatarEnergy LNG Engineering Conference has been successfully updated.
@@ -247,10 +247,7 @@ Theme: ${theme}
 Company: ${company}
 Discipline: ${discipline}
 Authors Names: ${authorNames}
-Authors' Emails: ${authorEmails}
-Authors' Positions: ${authorPositions}
-Authors' Contact Numbers: ${authorContact}
-Abstract Content: ${abstractContent}
+Abstract: ${abstractContent}
 
 
 You can modify your submission until the deadline: ${deadline}. 
@@ -260,7 +257,7 @@ To Modify your submission click here: ${updatedLink}
 ⁠Note: Presentations and Posters guidelines will be provided along with the letter of acceptance.
 
 Best regards,
-Abstract Submission Team`,
+Abstract Submission Team,
         };
 
         transporter.sendMail(mailOptions, (err) => {
@@ -279,5 +276,5 @@ Abstract Submission Team`,
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(Server running on port ${PORT});
 });
