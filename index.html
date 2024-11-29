@@ -38,19 +38,19 @@
             <div id="technical-paper-options" class="hidden options-box">
                 <p>Technical Paper Themes:</p>
                 <label>
-                    <input type="radio" id="digitalization" name="theme" value="Digitalization, Cyber Security & AI" required>
+                    <input type="radio" name="theme" value="Digitalization, Cyber Security & AI" required>
                     Digitalization, Cyber Security & AI
                 </label><br>
                 <label>
-                    <input type="radio" id="decarbonization" name="theme" value="Decarbonization Initiatives" required>
+                    <input type="radio" name="theme" value="Decarbonization Initiatives" required>
                     Decarbonization Initiatives
                 </label><br>
                 <label>
-                    <input type="radio" id="aging-facilities" name="theme" value="Aging Facilities & Asset Life Extension" required>
+                    <input type="radio" name="theme" value="Aging Facilities & Asset Life Extension" required>
                     Aging Facilities & Asset Life Extension
                 </label><br>
                 <label>
-                    <input type="radio" id="energy-efficiency" name="theme" value="Energy Efficiency & Yield Improvement" required>
+                    <input type="radio" name="theme" value="Energy Efficiency & Yield Improvement" required>
                     Energy Efficiency & Yield Improvement
                 </label>
             </div>
@@ -59,15 +59,15 @@
             <div id="poster-options" class="hidden options-box">
                 <p>Poster Themes:</p>
                 <label>
-                    <input type="radio" id="innovation" name="theme" value="Innovation, Technology & Sustainability" required>
+                    <input type="radio" name="theme" value="Innovation, Technology & Sustainability" required>
                     Innovation, Technology & Sustainability
                 </label><br>
                 <label>
-                    <input type="radio" id="integrity" name="theme" value="Integrity, Reliability & Process Safety" required>
+                    <input type="radio" name="theme" value="Integrity, Reliability & Process Safety" required>
                     Integrity, Reliability & Process Safety
                 </label><br>
                 <label>
-                    <input type="radio" id="optimization" name="theme" value="Optimization, Best Practices & Operations Excellence" required>
+                    <input type="radio" name="theme" value="Optimization, Best Practices & Operations Excellence" required>
                     Optimization, Best Practices & Operations Excellence
                 </label>
             </div>
@@ -163,7 +163,7 @@
                 submitterEmail: document.getElementById('submitter-email').value,
                 abstractTitle: document.getElementById('abstract-title').value,
                 abstractType: document.getElementById('abstract-type').value,
-                theme: document.querySelector('input[name="theme"]:checked').value,
+                theme: document.querySelector('input[name="theme"]:checked')?.value,
                 company: document.getElementById('company').value,
                 discipline: document.getElementById('discipline').value,
                 authorNames: document.getElementById('author-names').value,
@@ -173,8 +173,18 @@
                 abstractContent: document.getElementById('abstract').value,
             };
 
+            if (!formData.theme) {
+                alert('Please select a theme.');
+                return;
+            }
+
+            if (formData.abstractContent.split(/\s+/).length > 350) {
+                alert('Abstract exceeds the maximum word limit of 350 words.');
+                return;
+            }
+
             try {
-                const url = id ? `https://editable-form.onrender.com/update/${id}` : `https://your-backend-url.com/submit`;
+                const url = id ? `https://editable-form.onrender.com/update/${id}` : `https://editable-form.onrender.com/submit`;
                 const method = id ? 'PUT' : 'POST';
 
                 const response = await fetch(url, {
@@ -184,12 +194,13 @@
                 });
 
                 if (response.ok) {
+                    document.getElementById('abstract-form').classList.add('hidden');
                     document.getElementById('success-message').classList.remove('hidden');
                 } else {
                     alert('Submission failed. Please try again.');
                 }
             } catch (error) {
-                alert('An error occurred. Please try again.');
+                alert(`An error occurred: ${error.message}`);
             }
         }
     </script>
