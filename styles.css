@@ -184,3 +184,31 @@ button:hover {
     color: #000; /* Ensure "Note:" is bold and prominent */
 }
 
+.guideline-box {
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 15px; /* Add spacing inside the box */
+    background-color: #ffffff; /* Light background color */
+    margin-top: 20px; /* Add spacing above the box */
+    font-size: 0.95em; /* Slightly smaller font for readability */
+}
+
+.author-entry {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+#add-author-button {
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#add-author-button:hover {
+    background-color: #0056b3;
+}
