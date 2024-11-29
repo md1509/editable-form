@@ -110,7 +110,7 @@ app.post('/submit', async (req, res) => {
         await newSubmission.save();
 
         // Generate the edit link
-        const editLink = ${process.env.BASE_URL}/?id=${uniqueId};
+        const editLink = `${process.env.BASE_URL}/?id=${uniqueId}`;
         const deadline = "01/31/2025, 11:59:59 PM"; // Example deadline
 
         // Send email with the edit link
@@ -223,7 +223,7 @@ app.put('/update/:id', async (req, res) => {
         );
 
         // Generate the updated link
-        const updatedLink = ${process.env.BASE_URL}/?id=${id};
+        const updatedLink = `${process.env.BASE_URL}/?id=${id}`;
         const deadline = "01/31/2025, 11:59:59 PM"; // Example deadline
 
         // Send email to the updated submitter email
