@@ -13,15 +13,25 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB Atlas connection
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose
+  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Schema and model
 const submissionSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  comments: String,
+  submitterName: String,
+  submitterEmail: String,
+  abstractTitle: String,
+  abstractType: String,
+  theme: String,
+  company: String,
+  discipline: String,
+  authorNames: String,
+  authorEmails: String,
+  authorPositions: String,
+  authorContact: String,
+  abstractContent: String,
   uniqueId: String,
 });
 
@@ -38,12 +48,40 @@ const transporter = nodemailer.createTransport({
 
 // POST /submit: Handle form submission
 app.post('/submit', async (req, res) => {
-  const { name, email, comments } = req.body;
+  const {
+    submitterName,
+    submitterEmail,
+    abstractTitle,
+    abstractType,
+    theme,
+    company,
+    discipline,
+    authorNames,
+    authorEmails,
+    authorPositions,
+    authorContact,
+    abstractContent,
+  } = req.body;
+
   const uniqueId = Math.random().toString(36).substr(2, 9);
 
   try {
     // Save submission to the database
-    const newSubmission = new Submission({ name, email, comments, uniqueId });
+    const newSubmission = new Submission({
+      submitterName,
+      submitterEmail,
+      abstractTitle,
+      abstractType,
+      theme,
+      company,
+      discipline,
+      authorNames,
+      authorEmails,
+      authorPositions,
+      authorContact,
+      abstractContent,
+      uniqueId,
+    });
     await newSubmission.save();
 
     // Generate the edit link
@@ -52,9 +90,9 @@ app.post('/submit', async (req, res) => {
     // Send email with the edit link
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: email,
+      to: submitterEmail,
       subject: 'Edit Your Submission',
-      text: `You can edit your submission using the following link: ${editLink}`,
+      text: `Thank you for your submission! You can edit your submission using the following link: ${editLink}`,
     };
 
     transporter.sendMail(mailOptions, (err) => {
@@ -62,6 +100,7 @@ app.post('/submit', async (req, res) => {
       res.status(200).json({ message: 'Submission successful! Check your email.' });
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Error saving submission.' });
   }
 });
@@ -78,6 +117,7 @@ app.get('/submission/:id', async (req, res) => {
       res.status(404).json({ message: 'Submission not found.' });
     }
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Error retrieving submission.' });
   }
 });
@@ -85,12 +125,38 @@ app.get('/submission/:id', async (req, res) => {
 // PUT /update/:id: Update submission data
 app.put('/update/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, email, comments } = req.body;
+  const {
+    submitterName,
+    submitterEmail,
+    abstractTitle,
+    abstractType,
+    theme,
+    company,
+    discipline,
+    authorNames,
+    authorEmails,
+    authorPositions,
+    authorContact,
+    abstractContent,
+  } = req.body;
 
   try {
     const updatedSubmission = await Submission.findOneAndUpdate(
       { uniqueId: id },
-      { name, email, comments },
+      {
+        submitterName,
+        submitterEmail,
+        abstractTitle,
+        abstractType,
+        theme,
+        company,
+        discipline,
+        authorNames,
+        authorEmails,
+        authorPositions,
+        authorContact,
+        abstractContent,
+      },
       { new: true }
     );
 
@@ -100,6 +166,7 @@ app.put('/update/:id', async (req, res) => {
       res.status(404).json({ message: 'Submission not found.' });
     }
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Error updating submission.' });
   }
 });
