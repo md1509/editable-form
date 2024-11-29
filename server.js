@@ -117,7 +117,7 @@ app.post('/submit', async (req, res) => {
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: submitterEmail,
-            subject: `[EXTERNAL] Abstract Submission Confirmation: ${abstractTitle}`,
+            subject: `[EXTERNAL] 19th QatarEnergy LNG Abstract Submission Confirmation,
             text: `
 Dear ${submitterName},
 
@@ -230,7 +230,7 @@ app.put('/update/:id', async (req, res) => {
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: submitterEmail, // Always use the updated email
-            subject: `[EXTERNAL] Updated: 19th QatarEnergy LNG Abstract Submission Confirmation ${abstractTitle}`,
+            subject: `[EXTERNAL] Updated: 19th QatarEnergy LNG Abstract Submission Confirmation,
             text: `
 Dear ${submitterName},
 
