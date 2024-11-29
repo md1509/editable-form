@@ -96,7 +96,7 @@ textarea {
     border: 1px solid #ccc;
     padding: 15px;
     border-radius: 8px;
-    background-color: #f9f9f9;
+    background-color: #ffffff;
     margin-top: 10px;
 }
 
@@ -144,7 +144,7 @@ button:hover {
     padding: 15px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    background-color: #f9f9f9;
+    background-color: #ffffff;
     line-height: 1.5;
     font-size: 0.9em; /* Slightly smaller font */
 }
@@ -193,22 +193,26 @@ button:hover {
     font-size: 0.95em; /* Slightly smaller font for readability */
 }
 
+/* Add Another Author Link Styling */
+.add-author-link {
+    display: inline-block; /* Make it appear as a standalone element */
+    color: #007bff; /* Blue color for the link */
+    text-decoration: underline; /* Underline for a link-like appearance */
+    font-size: 1em; /* Standard font size */
+    margin-top: 10px; /* Add some space above the link */
+    cursor: pointer; /* Pointer cursor to indicate interactivity */
+}
+
+.add-author-link:hover {
+    text-decoration: none; /* Remove underline on hover for a cleaner look */
+    color: #0056b3; /* Darker blue to indicate hover state */
+}
+
+/* Author Entry Box Styling */
 .author-entry {
-    margin-bottom: 15px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-}
-#add-author-button {
-    margin-top: 10px;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-#add-author-button:hover {
-    background-color: #0056b3;
+    margin-bottom: 15px; /* Space below each author entry */
+    padding: 10px; /* Add padding inside the box */
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #ffffff; /* Subtle background color */
 }
