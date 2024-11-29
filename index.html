@@ -81,45 +81,51 @@
 
             <!-- Author/Co-author Details -->
             <h3>Author/Co-author Details</h3>
-            <label for="author-names">Author/Co-author Name(s)<span class="required">*</span>:</label>
-            <input type="text" id="author-names" name="authorNames" placeholder="Enter names separated by commas" required>
-
-            <label for="author-emails">Author/Co-author E-mail(s)<span class="required">*</span>:</label>
-            <input type="email" id="author-emails" name="authorEmails" placeholder="Enter emails separated by commas" required multiple>
-
-            <label for="author-positions">Author/Co-author Position Title(s)<span class="required">*</span>:</label>
-            <input type="text" id="author-positions" name="authorPositions" placeholder="Enter positions separated by commas" required>
-
-            <label for="author-contact">Author/Co-author Contact Number(s)<span class="required">*</span>:</label>
-            <input type="text" id="author-contact" name="authorContact" placeholder="Enter phone numbers separated by commas" required>
+            <div id="authors-container">
+                <!-- Initial Author Fields -->
+                <div class="author-entry">
+                    <label for="author-names-1">Author Name<span class="required">*</span>:</label>
+                    <input type="text" id="author-names-1" name="authorNames[]" placeholder="Enter name" required>
+                    
+                    <label for="author-emails-1">Author E-mail<span class="required">*</span>:</label>
+                    <input type="email" id="author-emails-1" name="authorEmails[]" placeholder="Enter email" required>
+                    
+                    <label for="author-positions-1">Position Title<span class="required">*</span>:</label>
+                    <input type="text" id="author-positions-1" name="authorPositions[]" placeholder="Enter position" required>
+                    
+                    <label for="author-contact-1">Contact Number<span class="required">*</span>:</label>
+                    <input type="text" id="author-contact-1" name="authorContact[]" placeholder="Enter contact number" required>
+                </div>
+            </div>
+            <button type="button" id="add-author-button">Add Another Author</button>
 
             <!-- Abstract Section -->
             <label for="abstract">Abstract (Max 350 words)<span class="required">*</span>:</label>
             <textarea id="abstract" name="abstractContent" placeholder="Write your abstract here (Max: 350 words)" rows="5" required></textarea>
             <p id="word-count">Words: 0/350</p>
-            
+
             <div class="guideline-box">
                 <h4>Recommended Guideline:</h4>
                 <ul>
-                  <li>Relevant to the selected theme for oil and gas industry.</li>
-                  <li>Added Value: Cost / Process / Efficiency / Enhancement.</li>
-                  <li>Implemented initiatives with proven results.</li>
-                  <li>Stress the importance / originality of work.</li>
-                  <li>Use clear terminologies.</li>
-                  <li>Avoid abbreviations.</li>
-                  <li>Not to exceed 350 words.</li>
-                  <li>Recommendation and conclusion.</li>
+                    <li>Relevant to the selected theme for oil and gas industry.</li>
+                    <li>Added Value: Cost / Process / Efficiency / Enhancement.</li>
+                    <li>Implemented initiatives with proven results.</li>
+                    <li>Stress the importance / originality of work.</li>
+                    <li>Use clear terminologies.</li>
+                    <li>Avoid abbreviations.</li>
+                    <li>Not to exceed 350 words.</li>
+                    <li>Recommendation and conclusion.</li>
                 </ul>
                 <h4>Recommended Structure:</h4>
                 <ul>
-                  <li>Introduction.</li>
-                  <li>Driver work.</li>
-                  <li>Methodology.</li>
-                  <li>Key results / outcomes.</li>
+                    <li>Introduction.</li>
+                    <li>Driver work.</li>
+                    <li>Methodology.</li>
+                    <li>Key results / outcomes.</li>
                 </ul>
-		<p><strong>Note:</strong> Presentations and Posters guidelines will be provided along with the letter of acceptance.</p>
+                <p><strong>Note:</strong> Presentations and Posters guidelines will be provided along with the letter of acceptance.</p>
             </div>
-          
+
             <!-- Submit Button -->
             <button type="submit" id="submit-button">Submit</button>
         </form>
@@ -147,6 +153,27 @@
             document.getElementById('word-count').innerText = `Words: ${wordCount}/350`;
         });
 
+        let authorCount = 1;
+        document.getElementById('add-author-button').addEventListener('click', function () {
+            authorCount++;
+            const authorEntry = document.createElement('div');
+            authorEntry.className = 'author-entry';
+            authorEntry.innerHTML = `
+                <label for="author-names-${authorCount}">Author Name<span class="required">*</span>:</label>
+                <input type="text" id="author-names-${authorCount}" name="authorNames[]" placeholder="Enter name" required>
+                
+                <label for="author-emails-${authorCount}">Author E-mail<span class="required">*</span>:</label>
+                <input type="email" id="author-emails-${authorCount}" name="authorEmails[]" placeholder="Enter email" required>
+                
+                <label for="author-positions-${authorCount}">Position Title<span class="required">*</span>:</label>
+                <input type="text" id="author-positions-${authorCount}" name="authorPositions[]" placeholder="Enter position" required>
+                
+                <label for="author-contact-${authorCount}">Contact Number<span class="required">*</span>:</label>
+                <input type="text" id="author-contact-${authorCount}" name="authorContact[]" placeholder="Enter contact number" required>
+            `;
+            document.getElementById('authors-container').appendChild(authorEntry);
+        });
+
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get('id');
 
@@ -161,6 +188,8 @@
                         alert("Invalid or expired link.");
                         return;
                     }
+
+                    // Populate fixed fields
                     document.getElementById('submitter-name').value = data.submitterName;
                     document.getElementById('submitter-email').value = data.submitterEmail;
                     document.getElementById('abstract-title').value = data.abstractTitle;
@@ -168,11 +197,31 @@
                     document.querySelector(`input[name="theme"][value="${data.theme}"]`).checked = true;
                     document.getElementById('company').value = data.company;
                     document.getElementById('discipline').value = data.discipline;
-                    document.getElementById('author-names').value = data.authorNames;
-                    document.getElementById('author-emails').value = data.authorEmails;
-                    document.getElementById('author-positions').value = data.authorPositions;
-                    document.getElementById('author-contact').value = data.authorContact;
                     document.getElementById('abstract').value = data.abstractContent;
+
+                    // Clear existing author fields
+                    const authorsContainer = document.getElementById('authors-container');
+                    authorsContainer.innerHTML = '';
+
+                    // Dynamically add authors
+                    data.authors.forEach((author, index) => {
+                        const authorEntry = document.createElement('div');
+                        authorEntry.className = 'author-entry';
+                        authorEntry.innerHTML = `
+                            <label for="author-names-${index + 1}">Author Name<span class="required">*</span>:</label>
+                            <input type="text" id="author-names-${index + 1}" name="authorNames[]" value="${author.name}" required>
+                            
+                            <label for="author-emails-${index + 1}">Author E-mail<span class="required">*</span>:</label>
+                            <input type="email" id="author-emails-${index + 1}" name="authorEmails[]" value="${author.email}" required>
+                            
+                            <label for="author-positions-${index + 1}">Position Title<span class="required">*</span>:</label>
+                            <input type="text" id="author-positions-${index + 1}" name="authorPositions[]" value="${author.position}" required>
+                            
+                            <label for="author-contact-${index + 1}">Contact Number<span class="required">*</span>:</label>
+                            <input type="text" id="author-contact-${index + 1}" name="authorContact[]" value="${author.contact}" required>
+                        `;
+                        authorsContainer.appendChild(authorEntry);
+                    });
                 })
                 .catch((error) => alert("Error fetching submission data."));
         }
@@ -180,6 +229,7 @@
         async function handleSubmit(event) {
             event.preventDefault();
 
+            // Collect fixed field data
             const formData = {
                 submitterName: document.getElementById('submitter-name').value,
                 submitterEmail: document.getElementById('submitter-email').value,
@@ -188,23 +238,34 @@
                 theme: document.querySelector('input[name="theme"]:checked')?.value,
                 company: document.getElementById('company').value,
                 discipline: document.getElementById('discipline').value,
-                authorNames: document.getElementById('author-names').value,
-                authorEmails: document.getElementById('author-emails').value,
-                authorPositions: document.getElementById('author-positions').value,
-                authorContact: document.getElementById('author-contact').value,
                 abstractContent: document.getElementById('abstract').value,
+                authors: [], // Collect authors dynamically
             };
 
+            // Collect all authors
+            const authorEntries = document.querySelectorAll('.author-entry');
+            authorEntries.forEach((entry, index) => {
+                const name = entry.querySelector(`#author-names-${index + 1}`).value;
+                const email = entry.querySelector(`#author-emails-${index + 1}`).value;
+                const position = entry.querySelector(`#author-positions-${index + 1}`).value;
+                const contact = entry.querySelector(`#author-contact-${index + 1}`).value;
+
+                formData.authors.push({ name, email, position, contact });
+            });
+
+            // Validate theme
             if (!formData.theme) {
                 alert('Please select a theme.');
                 return;
             }
 
+            // Validate word count
             if (formData.abstractContent.split(/\s+/).length > 350) {
                 alert('Abstract exceeds the maximum word limit of 350 words.');
                 return;
             }
 
+            // Send data to the server
             try {
                 const url = id ? `https://editable-form.onrender.com/update/${id}` : `https://editable-form.onrender.com/submit`;
                 const method = id ? 'PUT' : 'POST';
@@ -228,4 +289,3 @@
     </script>
 </body>
 </html>
-
