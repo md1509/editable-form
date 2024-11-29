@@ -144,7 +144,7 @@
 
         document.getElementById('abstract').addEventListener('input', function () {
             const wordCount = this.value.split(/\s+/).filter(word => word.length > 0).length;
-            document.getElementById('word-count').innerText = Words: ${wordCount}/350;
+            document.getElementById('word-count').innerText = `Words: ${wordCount}/350`;
         });
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -154,7 +154,7 @@
             document.getElementById('formTitle').innerText = "Edit Your Submission";
             document.getElementById('submit-button').innerText = "Update";
 
-            fetch(https://editable-form.onrender.com/submission/${id})
+            fetch(`https://editable-form.onrender.com/submission/${id}`)
                 .then(response => response.json())
                 .then(data => {
                     if (!data) {
@@ -165,7 +165,7 @@
                     document.getElementById('submitter-email').value = data.submitterEmail;
                     document.getElementById('abstract-title').value = data.abstractTitle;
                     document.getElementById('abstract-type').value = data.abstractType;
-                    document.querySelector(input[name="theme"][value="${data.theme}"]).checked = true;
+                    document.querySelector(`input[name="theme"][value="${data.theme}"]`).checked = true;
                     document.getElementById('company').value = data.company;
                     document.getElementById('discipline').value = data.discipline;
                     document.getElementById('author-names').value = data.authorNames;
@@ -206,7 +206,7 @@
             }
 
             try {
-                const url = id ? https://editable-form.onrender.com/update/${id} : https://editable-form.onrender.com/submit;
+                const url = id ? `https://editable-form.onrender.com/update/${id}` : `https://editable-form.onrender.com/submit`;
                 const method = id ? 'PUT' : 'POST';
 
                 const response = await fetch(url, {
@@ -222,7 +222,7 @@
                     alert('Submission failed. Please try again.');
                 }
             } catch (error) {
-                alert(An error occurred: ${error.message});
+                alert(`An error occurred: ${error.message}`);
             }
         }
     </script>
