@@ -14,9 +14,9 @@ app.use(bodyParser.json());
 
 // MongoDB Atlas connection
 mongoose
-  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Connected to MongoDB Atlas'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+    .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('Connected to MongoDB Atlas'))
+    .catch((err) => console.error('MongoDB connection error:', err));
 
 // Counter Schema
 const counterSchema = new mongoose.Schema({
@@ -33,7 +33,6 @@ const initializeCounter = async () => {
         await Counter.create({ _id: 'submissionId', sequenceValue: 0 });
     }
 };
-
 initializeCounter();
 
 // Schema and model
@@ -45,10 +44,10 @@ const submissionSchema = new mongoose.Schema({
     theme: { type: String, required: true },
     company: { type: String, required: true },
     discipline: { type: String, required: true },
-    authorNames: { type: String, required: true },
-    authorEmails: { type: String, required: true },
-    authorPositions: { type: String, required: true },
-    authorContact: { type: String, required: true },
+    authorNames: { type: String, required: true }, // Comma-separated names
+    authorEmails: { type: String, required: true }, // Comma-separated emails
+    authorPositions: { type: String, required: true }, // Comma-separated positions
+    authorContact: { type: String, required: true }, // Comma-separated contacts
     abstractContent: { type: String, required: true },
     uniqueId: { type: Number, required: true, unique: true },
 });
@@ -82,6 +81,24 @@ app.post('/submit', async (req, res) => {
     } = req.body;
 
     try {
+        // Validate fields
+        if (
+            !submitterName ||
+            !submitterEmail ||
+            !abstractTitle ||
+            !abstractType ||
+            !theme ||
+            !company ||
+            !discipline ||
+            !authorNames ||
+            !authorEmails ||
+            !authorPositions ||
+            !authorContact ||
+            !abstractContent
+        ) {
+            return res.status(400).json({ message: 'All fields are required.' });
+        }
+
         // Get the next uniqueId from the counter
         const counter = await Counter.findByIdAndUpdate(
             { _id: 'submissionId' },
@@ -133,7 +150,7 @@ Abstract Type: ${abstractType}
 Theme: ${theme}
 Company: ${company}
 Discipline: ${discipline}
-Authors Name: ${authorNames}
+Authors: ${authorNames}
 Abstract: ${abstractContent}
 
 You can modify your submission until the deadline: ${deadline}. 
@@ -166,7 +183,15 @@ app.get('/submission/:id', async (req, res) => {
     try {
         const submission = await Submission.findOne({ uniqueId: id });
         if (submission) {
-            res.status(200).json(submission);
+            // Convert comma-separated values back to arrays for frontend
+            const authors = submission.authorNames.split(",").map((name, index) => ({
+                name: name.trim(),
+                email: submission.authorEmails.split(",")[index]?.trim(),
+                position: submission.authorPositions.split(",")[index]?.trim(),
+                contact: submission.authorContact.split(",")[index]?.trim(),
+            }));
+
+            res.status(200).json({ ...submission._doc, authors });
         } else {
             res.status(404).json({ message: 'Submission not found.' });
         }
@@ -181,7 +206,7 @@ app.put('/update/:id', async (req, res) => {
     const { id } = req.params;
     const {
         submitterName,
-        submitterEmail, // The new email address provided by the submitter
+        submitterEmail,
         abstractTitle,
         abstractType,
         theme,
@@ -203,11 +228,11 @@ app.put('/update/:id', async (req, res) => {
         }
 
         // Update the submission with the new data
-        const updatedSubmission = await Submission.findOneAndUpdate(
+        await Submission.updateOne(
             { uniqueId: id },
             {
                 submitterName,
-                submitterEmail, // Update with the new email address
+                submitterEmail,
                 abstractTitle,
                 abstractType,
                 theme,
@@ -218,43 +243,33 @@ app.put('/update/:id', async (req, res) => {
                 authorPositions,
                 authorContact,
                 abstractContent,
-            },
-            { new: true }
+            }
         );
 
         // Generate the updated link
         const updatedLink = `${process.env.BASE_URL}/?id=${id}`;
-        const deadline = "01/31/2025, 11:59:59 PM"; // Example deadline
+        const deadline = "01/31/2025, 11:59:59 PM";
 
         // Send email to the updated submitter email
         const mailOptions = {
             from: process.env.EMAIL_USER,
-            to: submitterEmail, // Always use the updated email
+            to: submitterEmail,
             subject: `[EXTERNAL] Updated: 19th QatarEnergy LNG Abstract Submission Confirmation`,
             text: `
 Dear ${submitterName},
 
-Your abstract submission to the 19th QatarEnergy LNG Engineering Conference has been successfully updated.
+Your abstract submission has been successfully updated.
 
 Updated details of your submission:
 
 Submission ID: ${id}
 Submitter Name: ${submitterName}
-Submitter Email: ${submitterEmail}
 Abstract Title: ${abstractTitle}
-Abstract Type: ${abstractType}
-Theme: ${theme}
-Company: ${company}
-Discipline: ${discipline}
-Authors Names: ${authorNames}
 Abstract: ${abstractContent}
-
 
 You can modify your submission until the deadline: ${deadline}. 
 
-To Modify your submission click here: ${updatedLink}
-
-⁠Note: Presentations and Posters guidelines will be provided along with the letter of acceptance.
+To modify your submission, click here: ${updatedLink}
 
 Best regards,
 Abstract Submission Team`,
@@ -265,9 +280,8 @@ Abstract Submission Team`,
                 console.error('Error sending email:', err);
                 return res.status(500).json({ message: 'Error sending updated email link.' });
             }
+            res.status(200).json({ message: 'Submission updated successfully!' });
         });
-
-        res.status(200).json({ message: 'Submission updated successfully and email sent!' });
     } catch (err) {
         console.error('Error updating submission:', err);
         res.status(500).json({ message: 'Error updating submission.' });
