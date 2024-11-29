@@ -20,19 +20,19 @@ mongoose
 
 // Schema and model
 const submissionSchema = new mongoose.Schema({
-  submitterName: String,
-  submitterEmail: String,
-  abstractTitle: String,
-  abstractType: String,
-  theme: String,
-  company: String,
-  discipline: String,
-  authorNames: String,
-  authorEmails: String,
-  authorPositions: String,
-  authorContact: String,
-  abstractContent: String,
-  uniqueId: String,
+  submitterName: { type: String, required: true },
+  submitterEmail: { type: String, required: true },
+  abstractTitle: { type: String, required: true },
+  abstractType: { type: String, required: true },
+  theme: { type: String, required: true },
+  company: { type: String, required: true },
+  discipline: { type: String, required: true },
+  authorNames: { type: String, required: true },
+  authorEmails: { type: String, required: true },
+  authorPositions: { type: String, required: true },
+  authorContact: { type: String, required: true },
+  abstractContent: { type: String, required: true },
+  uniqueId: { type: String, required: true, unique: true },
 });
 
 const Submission = mongoose.model('Submission', submissionSchema);
@@ -96,11 +96,14 @@ app.post('/submit', async (req, res) => {
     };
 
     transporter.sendMail(mailOptions, (err) => {
-      if (err) return res.status(500).json({ message: 'Error sending email' });
+      if (err) {
+        console.error('Error sending email:', err);
+        return res.status(500).json({ message: 'Error sending email.' });
+      }
       res.status(200).json({ message: 'Submission successful! Check your email.' });
     });
   } catch (err) {
-    console.error(err);
+    console.error('Error saving submission:', err);
     res.status(500).json({ message: 'Error saving submission.' });
   }
 });
@@ -117,7 +120,7 @@ app.get('/submission/:id', async (req, res) => {
       res.status(404).json({ message: 'Submission not found.' });
     }
   } catch (err) {
-    console.error(err);
+    console.error('Error retrieving submission:', err);
     res.status(500).json({ message: 'Error retrieving submission.' });
   }
 });
@@ -166,7 +169,7 @@ app.put('/update/:id', async (req, res) => {
       res.status(404).json({ message: 'Submission not found.' });
     }
   } catch (err) {
-    console.error(err);
+    console.error('Error updating submission:', err);
     res.status(500).json({ message: 'Error updating submission.' });
   }
 });
