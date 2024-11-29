@@ -66,59 +66,59 @@ const transporter = nodemailer.createTransport({
 
 // POST /submit: Handle form submission
 app.post('/submit', async (req, res) => {
-  const {
-    submitterName,
-    submitterEmail,
-    abstractTitle,
-    abstractType,
-    theme,
-    company,
-    discipline,
-    authorNames,
-    authorEmails,
-    authorPositions,
-    authorContact,
-    abstractContent,
-  } = req.body;
+    const {
+        submitterName,
+        submitterEmail,
+        abstractTitle,
+        abstractType,
+        theme,
+        company,
+        discipline,
+        authorNames,
+        authorEmails,
+        authorPositions,
+        authorContact,
+        abstractContent,
+    } = req.body;
 
-  try {
-    // Get the next uniqueId
-    const counter = await Counter.findByIdAndUpdate(
-      { _id: 'submissionId' },
-      { $inc: { sequenceValue: 1 } },
-      { new: true, upsert: true }
-    );
+    try {
+        // Get the next uniqueId from the counter
+        const counter = await Counter.findByIdAndUpdate(
+            { _id: 'submissionId' },
+            { $inc: { sequenceValue: 1 } },
+            { new: true, upsert: true }
+        );
 
-    const uniqueId = counter.sequenceValue;
+        const uniqueId = counter.sequenceValue;
 
-    // Save submission to the database
-    const newSubmission = new Submission({
-      submitterName,
-      submitterEmail,
-      abstractTitle,
-      abstractType,
-      theme,
-      company,
-      discipline,
-      authorNames,
-      authorEmails,
-      authorPositions,
-      authorContact,
-      abstractContent,
-      uniqueId,
-    });
-    await newSubmission.save();
+        // Save submission to the database
+        const newSubmission = new Submission({
+            submitterName,
+            submitterEmail,
+            abstractTitle,
+            abstractType,
+            theme,
+            company,
+            discipline,
+            authorNames,
+            authorEmails,
+            authorPositions,
+            authorContact,
+            abstractContent,
+            uniqueId,
+        });
+        await newSubmission.save();
 
-    // Generate the edit link
-    const editLink = `${process.env.BASE_URL}/modify/${uniqueId}`;
-    const deadline = "12/15/2024, 11:59:59 PM"; // Example deadline
+        // Generate the edit link
+        const editLink = `${process.env.BASE_URL}/?id=${uniqueId}`;
+        const deadline = "12/15/2024, 11:59:59 PM"; // Example deadline
 
-    // Send email with the edit link and submission details
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: submitterEmail,
-      subject: `[EXTERNAL] Abstract Submission Confirmation: ${abstractTitle}`,
-      text: `
+        // Send email with the edit link
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: submitterEmail,
+            subject: `[EXTERNAL] Abstract Submission Confirmation: ${abstractTitle}`,
+            text: `
 Dear ${submitterName},
 
 We received your abstract submission to the 19th QatarEnergy LNG Engineering Conference.
@@ -145,19 +145,19 @@ ${editLink}
 
 Best regards,
 Abstract Submission Team`,
-    };
+        };
 
-    transporter.sendMail(mailOptions, (err) => {
-      if (err) {
-        console.error('Error sending email:', err);
-        return res.status(500).json({ message: 'Error sending email.' });
-      }
-      res.status(200).json({ message: 'Submission successful! Check your email.' });
-    });
-  } catch (err) {
-    console.error('Error saving submission:', err);
-    res.status(500).json({ message: 'Error saving submission.' });
-  }
+        transporter.sendMail(mailOptions, (err) => {
+            if (err) {
+                console.error('Error sending email:', err);
+                return res.status(500).json({ message: 'Error sending email.' });
+            }
+            res.status(200).json({ message: 'Submission successful! Check your email.' });
+        });
+    } catch (err) {
+        console.error('Error saving submission:', err);
+        res.status(500).json({ message: 'Error saving submission.' });
+    }
 });
 
 // GET /submission/:id: Retrieve submission data for editing
@@ -274,7 +274,6 @@ Abstract Submission Team`,
         res.status(500).json({ message: 'Error updating submission.' });
     }
 });
-
 
 // Start the server
 app.listen(PORT, () => {
