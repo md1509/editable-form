@@ -66,71 +66,98 @@ const transporter = nodemailer.createTransport({
 
 // POST /submit: Handle form submission
 app.post('/submit', async (req, res) => {
-    const {
-        submitterName,
-        submitterEmail,
-        abstractTitle,
-        abstractType,
-        theme,
-        company,
-        discipline,
-        authorNames,
-        authorEmails,
-        authorPositions,
-        authorContact,
-        abstractContent,
-    } = req.body;
+  const {
+    submitterName,
+    submitterEmail,
+    abstractTitle,
+    abstractType,
+    theme,
+    company,
+    discipline,
+    authorNames,
+    authorEmails,
+    authorPositions,
+    authorContact,
+    abstractContent,
+  } = req.body;
 
-    try {
-        // Get the next uniqueId from the counter
-        const counter = await Counter.findByIdAndUpdate(
-            { _id: 'submissionId' },
-            { $inc: { sequenceValue: 1 } },
-            { new: true, upsert: true }
-        );
+  try {
+    // Get the next uniqueId
+    const counter = await Counter.findByIdAndUpdate(
+      { _id: 'submissionId' },
+      { $inc: { sequenceValue: 1 } },
+      { new: true, upsert: true }
+    );
 
-        const uniqueId = counter.sequenceValue;
+    const uniqueId = counter.sequenceValue;
 
-        // Save submission to the database
-        const newSubmission = new Submission({
-            submitterName,
-            submitterEmail,
-            abstractTitle,
-            abstractType,
-            theme,
-            company,
-            discipline,
-            authorNames,
-            authorEmails,
-            authorPositions,
-            authorContact,
-            abstractContent,
-            uniqueId,
-        });
-        await newSubmission.save();
+    // Save submission to the database
+    const newSubmission = new Submission({
+      submitterName,
+      submitterEmail,
+      abstractTitle,
+      abstractType,
+      theme,
+      company,
+      discipline,
+      authorNames,
+      authorEmails,
+      authorPositions,
+      authorContact,
+      abstractContent,
+      uniqueId,
+    });
+    await newSubmission.save();
 
-        // Generate the edit link
-        const editLink = `${process.env.BASE_URL}/?id=${uniqueId}`;
+    // Generate the edit link
+    const editLink = `${process.env.BASE_URL}/modify/${uniqueId}`;
+    const deadline = "12/15/2024, 11:59:59 PM"; // Example deadline
 
-        // Send email with the edit link
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: submitterEmail,
-            subject: 'Edit Your Submission',
-            text: `Thank you for your submission! You can edit your submission using the following link: ${editLink}`,
-        };
+    // Send email with the edit link and submission details
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: submitterEmail,
+      subject: `[EXTERNAL] Abstract Submission Confirmation: ${abstractTitle}`,
+      text: `
+Dear ${submitterName},
 
-        transporter.sendMail(mailOptions, (err) => {
-            if (err) {
-                console.error('Error sending email:', err);
-                return res.status(500).json({ message: 'Error sending email.' });
-            }
-            res.status(200).json({ message: 'Submission successful! Check your email.' });
-        });
-    } catch (err) {
-        console.error('Error saving submission:', err);
-        res.status(500).json({ message: 'Error saving submission.' });
-    }
+We received your abstract submission to the 19th QatarEnergy LNG Engineering Conference.
+
+Details of your submission:
+- Submitter Name: ${submitterName}
+- Submitter Email: ${submitterEmail}
+- Abstract Title: ${abstractTitle}
+- Abstract Type: ${abstractType}
+- Theme: ${theme}
+- Company: ${company}
+- Discipline: ${discipline}
+- Authors: ${authorNames}
+- Authors' Emails: ${authorEmails}
+- Authors' Positions: ${authorPositions}
+- Authors' Contact Numbers: ${authorContact}
+- Abstract Content: ${abstractContent}
+- Submission ID: ${uniqueId}
+
+You can modify your submission until the deadline: ${deadline}.
+
+Modify your submission here:
+${editLink}
+
+Best regards,
+Abstract Submission Team`,
+    };
+
+    transporter.sendMail(mailOptions, (err) => {
+      if (err) {
+        console.error('Error sending email:', err);
+        return res.status(500).json({ message: 'Error sending email.' });
+      }
+      res.status(200).json({ message: 'Submission successful! Check your email.' });
+    });
+  } catch (err) {
+    console.error('Error saving submission:', err);
+    res.status(500).json({ message: 'Error saving submission.' });
+  }
 });
 
 // GET /submission/:id: Retrieve submission data for editing
@@ -198,13 +225,40 @@ app.put('/update/:id', async (req, res) => {
 
         // Generate the updated link
         const updatedLink = `${process.env.BASE_URL}/?id=${id}`;
+        const deadline = "12/15/2024, 11:59:59 PM"; // Example deadline
 
         // Send email to the updated submitter email
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: submitterEmail, // Always use the updated email
-            subject: 'Updated Submission Link',
-            text: `Your submission has been updated! You can edit your updated submission using the following link: ${updatedLink}`,
+            subject: `[EXTERNAL] Abstract Submission Updated: ${abstractTitle}`,
+            text: `
+Dear ${submitterName},
+
+Your abstract submission to the 19th QatarEnergy LNG Engineering Conference has been successfully updated.
+
+Details of your updated submission:
+- Submitter Name: ${submitterName}
+- Submitter Email: ${submitterEmail}
+- Abstract Title: ${abstractTitle}
+- Abstract Type: ${abstractType}
+- Theme: ${theme}
+- Company: ${company}
+- Discipline: ${discipline}
+- Authors: ${authorNames}
+- Authors' Emails: ${authorEmails}
+- Authors' Positions: ${authorPositions}
+- Authors' Contact Numbers: ${authorContact}
+- Abstract Content: ${abstractContent}
+- Submission ID: ${id}
+
+You can modify your updated submission until the deadline: ${deadline}.
+
+Modify your submission here:
+${updatedLink}
+
+Best regards,
+Abstract Submission Team`,
         };
 
         transporter.sendMail(mailOptions, (err) => {
@@ -220,6 +274,7 @@ app.put('/update/:id', async (req, res) => {
         res.status(500).json({ message: 'Error updating submission.' });
     }
 });
+
 
 // Start the server
 app.listen(PORT, () => {
