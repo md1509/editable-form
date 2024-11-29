@@ -125,7 +125,7 @@ app.get('/submission/:id', async (req, res) => {
   }
 });
 
-// PUT /update/:id: Update submission data
+// PUT /update/:id: Update submission data and send updated email link in all cases
 app.put('/update/:id', async (req, res) => {
   const { id } = req.params;
   const {
@@ -144,6 +144,14 @@ app.put('/update/:id', async (req, res) => {
   } = req.body;
 
   try {
+    // Find the existing submission
+    const existingSubmission = await Submission.findOne({ uniqueId: id });
+
+    if (!existingSubmission) {
+      return res.status(404).json({ message: 'Submission not found.' });
+    }
+
+    // Update the submission with the new data
     const updatedSubmission = await Submission.findOneAndUpdate(
       { uniqueId: id },
       {
@@ -163,11 +171,25 @@ app.put('/update/:id', async (req, res) => {
       { new: true }
     );
 
-    if (updatedSubmission) {
-      res.status(200).json({ message: 'Submission updated successfully!' });
-    } else {
-      res.status(404).json({ message: 'Submission not found.' });
-    }
+    // Generate the updated link
+    const updatedLink = `${process.env.BASE_URL}/?id=${id}`;
+
+    // Send email to the submitter (new or existing email)
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: submitterEmail,
+      subject: 'Updated Submission Link',
+      text: `Your submission has been updated! You can edit your updated submission using the following link: ${updatedLink}`,
+    };
+
+    transporter.sendMail(mailOptions, (err) => {
+      if (err) {
+        console.error('Error sending email:', err);
+        return res.status(500).json({ message: 'Error sending updated email link.' });
+      }
+    });
+
+    res.status(200).json({ message: 'Submission updated successfully!' });
   } catch (err) {
     console.error('Error updating submission:', err);
     res.status(500).json({ message: 'Error updating submission.' });
