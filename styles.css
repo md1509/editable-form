@@ -215,16 +215,3 @@ button:hover {
     background-color: #0056b3;
 }
 
-.remove-author-button {
-    background-color: #f44336; /* Red button */
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    margin-top: 10px;
-    cursor: pointer;
-    border-radius: 3px;
-}
-
-.remove-author-button:hover {
-    background-color: #d32f2f; /* Darker red on hover */
-}
