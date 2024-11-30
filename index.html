@@ -214,18 +214,21 @@
                     data.authors.forEach((author, index) => {
                         const authorEntry = document.createElement('div');
                         authorEntry.className = 'author-entry';
+                        authorEntry.setAttribute('id', `author-entry-${index + 1}`);
                         authorEntry.innerHTML = `
-                            <label for="author-names-${index + 1}">Author Name<span class="required">*</span>:</label>
+                            <label for="author-names-${index + 1}">Author ${index + 1} Name<span class="required">*</span>:</label>
                             <input type="text" id="author-names-${index + 1}" name="authorNames[]" value="${author.name}" required>
                             
-                            <label for="author-emails-${index + 1}">Author E-mail<span class="required">*</span>:</label>
+                            <label for="author-emails-${index + 1}">Author ${index + 1} E-mail<span class="required">*</span>:</label>
                             <input type="email" id="author-emails-${index + 1}" name="authorEmails[]" value="${author.email}" required>
                             
-                            <label for="author-positions-${index + 1}">Position Title<span class="required">*</span>:</label>
+                            <label for="author-positions-${index + 1}">Author ${index + 1} Position Title<span class="required">*</span>:</label>
                             <input type="text" id="author-positions-${index + 1}" name="authorPositions[]" value="${author.position}" required>
                             
-                            <label for="author-contact-${index + 1}">Contact Number<span class="required">*</span>:</label>
+                            <label for="author-contact-${index + 1}">Author ${index + 1} Contact Number<span class="required">*</span>:</label>
                             <input type="text" id="author-contact-${index + 1}" name="authorContact[]" value="${author.contact}" required>
+                            
+                            ${index > 0 ? `<button type="button" class="remove-author-button" onclick="removeAuthor(${index + 1})">Remove Author ${index + 1}</button>` : ''}
                         `;
                         authorsContainer.appendChild(authorEntry);
                     });
@@ -245,24 +248,19 @@
                 company: document.getElementById('company').value,
                 discipline: document.getElementById('discipline').value,
                 abstractContent: document.getElementById('abstract').value,
-                authorNames: [],
-                authorEmails: [],
-                authorPositions: [],
-                authorContact: [],
+                authors: [], // Updated to send authors as an array
             };
 
             const authorEntries = document.querySelectorAll('.author-entry');
-            authorEntries.forEach((entry) => {
-                formData.authorNames.push(entry.querySelector('input[name="authorNames[]"]').value);
-                formData.authorEmails.push(entry.querySelector('input[name="authorEmails[]"]').value);
-                formData.authorPositions.push(entry.querySelector('input[name="authorPositions[]"]').value);
-                formData.authorContact.push(entry.querySelector('input[name="authorContact[]"]').value);
+            authorEntries.forEach((entry, index) => {
+                formData.authors.push({
+                    name: entry.querySelector('input[name="authorNames[]"]').value,
+                    email: entry.querySelector('input[name="authorEmails[]"]').value,
+                    position: entry.querySelector('input[name="authorPositions[]"]').value,
+                    contact: entry.querySelector('input[name="authorContact[]"]').value,
+                    authorNumber: index + 1, // Differentiating authors
+                });
             });
-
-            formData.authorNames = formData.authorNames.join(", ");
-            formData.authorEmails = formData.authorEmails.join(", ");
-            formData.authorPositions = formData.authorPositions.join(", ");
-            formData.authorContact = formData.authorContact.join(", ");
 
             if (!formData.theme) {
                 alert('Please select a theme.');
