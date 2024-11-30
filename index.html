@@ -232,6 +232,8 @@
                         `;
                         authorsContainer.appendChild(authorEntry);
                     });
+                    // Update authorCount to match the number of authors loaded
+                    authorCount = data.authors.length;
                 })
                 .catch((error) => alert("Error fetching submission data."));
         }
