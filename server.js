@@ -44,10 +44,14 @@ const submissionSchema = new mongoose.Schema({
     theme: { type: String, required: true },
     company: { type: String, required: true },
     discipline: { type: String, required: true },
-    authorNames: { type: String, required: true }, // Comma-separated names
-    authorEmails: { type: String, required: true }, // Comma-separated emails
-    authorPositions: { type: String, required: true }, // Comma-separated positions
-    authorContact: { type: String, required: true }, // Comma-separated contacts
+    authors: [
+        {
+            name: { type: String, required: true },
+            email: { type: String, required: true },
+            position: { type: String, required: true },
+            contact: { type: String, required: true },
+        },
+    ], // Array of authors
     abstractContent: { type: String, required: true },
     uniqueId: { type: Number, required: true, unique: true },
 });
@@ -73,10 +77,7 @@ app.post('/submit', async (req, res) => {
         theme,
         company,
         discipline,
-        authorNames,
-        authorEmails,
-        authorPositions,
-        authorContact,
+        authors, // Expecting array of authors
         abstractContent,
     } = req.body;
 
@@ -90,13 +91,21 @@ app.post('/submit', async (req, res) => {
             !theme ||
             !company ||
             !discipline ||
-            !authorNames ||
-            !authorEmails ||
-            !authorPositions ||
-            !authorContact ||
+            !authors ||
             !abstractContent
         ) {
             return res.status(400).json({ message: 'All fields are required.' });
+        }
+
+        // Validate authors
+        if (!Array.isArray(authors) || authors.length === 0) {
+            return res.status(400).json({ message: 'At least one author is required.' });
+        }
+
+        for (const author of authors) {
+            if (!author.name || !author.email || !author.position || !author.contact) {
+                return res.status(400).json({ message: 'Each author must have name, email, position, and contact.' });
+            }
         }
 
         // Get the next uniqueId from the counter
@@ -117,10 +126,7 @@ app.post('/submit', async (req, res) => {
             theme,
             company,
             discipline,
-            authorNames,
-            authorEmails,
-            authorPositions,
-            authorContact,
+            authors, // Store authors as array
             abstractContent,
             uniqueId,
         });
@@ -150,12 +156,13 @@ Abstract Type: ${abstractType}
 Theme: ${theme}
 Company: ${company}
 Discipline: ${discipline}
-Authors: ${authorNames}
+Authors:
+${authors.map((author, index) => `Author ${index + 1}: ${author.name}, ${author.email}`).join('\n')}
 Abstract: ${abstractContent}
 
 You can modify your submission until the deadline: ${deadline}. 
 
-To Modify your submission click here: ${editLink}
+To modify your submission, click here: ${editLink}
 
 ⁠Note: Presentations and Posters guidelines will be provided along with the letter of acceptance.
 
@@ -183,15 +190,7 @@ app.get('/submission/:id', async (req, res) => {
     try {
         const submission = await Submission.findOne({ uniqueId: id });
         if (submission) {
-            // Convert comma-separated values back to arrays for frontend
-            const authors = submission.authorNames.split(",").map((name, index) => ({
-                name: name.trim(),
-                email: submission.authorEmails.split(",")[index]?.trim(),
-                position: submission.authorPositions.split(",")[index]?.trim(),
-                contact: submission.authorContact.split(",")[index]?.trim(),
-            }));
-
-            res.status(200).json({ ...submission._doc, authors });
+            res.status(200).json(submission);
         } else {
             res.status(404).json({ message: 'Submission not found.' });
         }
@@ -212,23 +211,24 @@ app.put('/update/:id', async (req, res) => {
         theme,
         company,
         discipline,
-        authorNames,
-        authorEmails,
-        authorPositions,
-        authorContact,
+        authors,
         abstractContent,
     } = req.body;
 
     try {
-        // Find the existing submission
-        const existingSubmission = await Submission.findOne({ uniqueId: id });
-
-        if (!existingSubmission) {
-            return res.status(404).json({ message: 'Submission not found.' });
+        // Validate authors
+        if (!Array.isArray(authors) || authors.length === 0) {
+            return res.status(400).json({ message: 'At least one author is required.' });
         }
 
-        // Update the submission with the new data
-        await Submission.updateOne(
+        for (const author of authors) {
+            if (!author.name || !author.email || !author.position || !author.contact) {
+                return res.status(400).json({ message: 'Each author must have name, email, position, and contact.' });
+            }
+        }
+
+        // Update the submission
+        const updatedSubmission = await Submission.findOneAndUpdate(
             { uniqueId: id },
             {
                 submitterName,
@@ -238,13 +238,15 @@ app.put('/update/:id', async (req, res) => {
                 theme,
                 company,
                 discipline,
-                authorNames,
-                authorEmails,
-                authorPositions,
-                authorContact,
+                authors, // Update authors
                 abstractContent,
-            }
+            },
+            { new: true }
         );
+
+        if (!updatedSubmission) {
+            return res.status(404).json({ message: 'Submission not found.' });
+        }
 
         // Generate the updated link
         const updatedLink = `${process.env.BASE_URL}/?id=${id}`;
@@ -270,7 +272,8 @@ Abstract Type: ${abstractType}
 Theme: ${theme}
 Company: ${company}
 Discipline: ${discipline}
-Authors: ${authorNames}
+Authors:
+${authors.map((author, index) => `Author ${index + 1}: ${author.name}, ${author.email}`).join('\n')}
 Abstract: ${abstractContent}
 
 You can modify your submission until the deadline: ${deadline}. 
